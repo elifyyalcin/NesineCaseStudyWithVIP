@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		A10000000000000000000001 /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = A10000000000000000000003 /* SnapKit */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		026862AE302BC75E000C2833 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -53,11 +57,6 @@
 			path = NesineCaseStudyWithVIPTests;
 			sourceTree = "<group>";
 		};
-		026862BA302BC75E000C2833 /* NesineCaseStudyWithVIPUITests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = NesineCaseStudyWithVIPUITests;
-			sourceTree = "<group>";
-		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -65,6 +64,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A10000000000000000000001 /* SnapKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -90,7 +90,6 @@
 			children = (
 				02686299302BC75D000C2833 /* NesineCaseStudyWithVIP */,
 				026862B0302BC75E000C2833 /* NesineCaseStudyWithVIPTests */,
-				026862BA302BC75E000C2833 /* NesineCaseStudyWithVIPUITests */,
 				02686298302BC75D000C2833 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -125,6 +124,7 @@
 			);
 			name = NesineCaseStudyWithVIP;
 			packageProductDependencies = (
+				A10000000000000000000003 /* SnapKit */,
 			);
 			productName = NesineCaseStudyWithVIP;
 			productReference = 02686297302BC75D000C2833 /* NesineCaseStudyWithVIP.app */;
@@ -166,9 +166,6 @@
 			dependencies = (
 				026862B9302BC75E000C2833 /* PBXTargetDependency */,
 			);
-			fileSystemSynchronizedGroups = (
-				026862BA302BC75E000C2833 /* NesineCaseStudyWithVIPUITests */,
-			);
 			name = NesineCaseStudyWithVIPUITests;
 			packageProductDependencies = (
 			);
@@ -208,6 +205,9 @@
 			);
 			mainGroup = 0268628E302BC75C000C2833;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				A10000000000000000000002 /* XCRemoteSwiftPackageReference "SnapKit" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 02686298302BC75D000C2833 /* Products */;
 			projectDirPath = "";
@@ -289,11 +289,11 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = KYTCA9RCJX;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = NesineCaseStudyWithVIP/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
-				INFOPLIST_KEY_UIMainStoryboardFile = Main;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -316,11 +316,11 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = KYTCA9RCJX;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = NesineCaseStudyWithVIP/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
-				INFOPLIST_KEY_UIMainStoryboardFile = Main;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -563,6 +563,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		A10000000000000000000002 /* XCRemoteSwiftPackageReference "SnapKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SnapKit/SnapKit.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.7.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		A10000000000000000000003 /* SnapKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A10000000000000000000002 /* XCRemoteSwiftPackageReference "SnapKit" */;
+			productName = SnapKit;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 0268628F302BC75C000C2833 /* Project object */;
 }
