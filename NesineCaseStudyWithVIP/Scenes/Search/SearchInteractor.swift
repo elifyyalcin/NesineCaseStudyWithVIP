@@ -28,10 +28,9 @@ final class SearchInteractor: SearchBusinessLogic {
             try Task.checkCancellation()
             guard generation == requestGeneration else { return }
 
-            let screenshots = apiResponse.results.enumerated().flatMap { resultIndex, result in
-                result.screenshotUrls.enumerated().map { screenshotIndex, url in
+            let screenshots = apiResponse.results.flatMap { result in
+                result.screenshotUrls.map { url in
                     Search.Screenshot(
-                        id: "\(resultIndex)-\(screenshotIndex)-\(url.absoluteString)",
                         imageURL: url,
                         appName: result.trackName
                     )

@@ -2,13 +2,11 @@ import Foundation
 
 enum Search {
     struct Screenshot: Equatable {
-        let id: String
         let imageURL: URL
         let appName: String?
     }
 
     struct ScreenshotItem {
-        let id: String
         let imageURL: URL
         let appName: String
     }

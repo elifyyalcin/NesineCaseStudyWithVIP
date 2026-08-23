@@ -27,7 +27,6 @@ final class SearchPresenter: SearchPresentationLogic {
         case .success(let screenshots):
             let items = screenshots.map {
                 Search.ScreenshotItem(
-                    id: $0.id,
                     imageURL: $0.imageURL,
                     appName: $0.appName ?? "Unknown App"
                 )

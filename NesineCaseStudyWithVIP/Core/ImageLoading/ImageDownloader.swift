@@ -1,6 +1,6 @@
 import UIKit
 
-actor ImageDownloader: ImageDownloaderProtocol {
+final class ImageDownloader: ImageDownloaderProtocol {
     private let session: URLSession
     private let cache: NSCache<NSURL, UIImage>
     private let limiter: ImageDownloadLimiter
@@ -82,10 +82,10 @@ private actor ImageDownloadLimiter {
         let waiterID = nextWaiterID
         nextWaiterID += 1
 
-        try await withTaskCancellationHandler {
-            try await withCheckedThrowingContinuation {
+        try await withTaskCancellationHandler { // beklerken cancel olursa bunu handle et
+            try await withCheckedThrowingContinuation { // slot yok beklet
                 (continuation: CheckedContinuation<Void, Error>) in
-                guard !Task.isCancelled else {
+                guard !Task.isCancelled else { // waitera konmadan önce cancel kontrol
                     continuation.resume(throwing: CancellationError())
                     return
                 }
@@ -94,12 +94,12 @@ private actor ImageDownloadLimiter {
             }
         } onCancel: {
             Task {
-                await self.cancelWaiter(id: waiterID)
+                await self.cancelWaiter(id: waiterID) // waitera eklendikten sonra beklerken cancel
             }
         }
 
         do {
-            try Task.checkCancellation()
+            try Task.checkCancellation() // permit aldıktan hemen sonra cancel oldu mu
         } catch {
             release()
             throw error
