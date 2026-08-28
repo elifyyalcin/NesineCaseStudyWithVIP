@@ -9,7 +9,7 @@ final class SearchPresenterTests: XCTestCase {
         presenter.viewController = display
         let url = try XCTUnwrap(URL(string: "https://example.com/image.png"))
         let screenshots = [
-            Search.Screenshot(id: "1", imageURL: url, appName: "Example App")
+            Search.Screenshot(imageURL: url, appName: "Example App")
         ]
 
         presenter.present(response: Search.Load.Response(state: .success(screenshots)))
@@ -17,7 +17,6 @@ final class SearchPresenterTests: XCTestCase {
         guard case .content(let items) = display.viewModels.last?.state else {
             return XCTFail("Expected content state")
         }
-        XCTAssertEqual(items.first?.id, "1")
         XCTAssertEqual(items.first?.imageURL, url)
         XCTAssertEqual(items.first?.appName, "Example App")
     }

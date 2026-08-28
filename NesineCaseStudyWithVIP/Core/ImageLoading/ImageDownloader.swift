@@ -82,10 +82,10 @@ private actor ImageDownloadLimiter {
         let waiterID = nextWaiterID
         nextWaiterID += 1
 
-        try await withTaskCancellationHandler { // beklerken cancel olursa bunu handle et
-            try await withCheckedThrowingContinuation { // slot yok beklet
+        try await withTaskCancellationHandler {
+            try await withCheckedThrowingContinuation {
                 (continuation: CheckedContinuation<Void, Error>) in
-                guard !Task.isCancelled else { // waitera konmadan önce cancel kontrol
+                guard !Task.isCancelled else {
                     continuation.resume(throwing: CancellationError())
                     return
                 }
@@ -94,12 +94,12 @@ private actor ImageDownloadLimiter {
             }
         } onCancel: {
             Task {
-                await self.cancelWaiter(id: waiterID) // waitera eklendikten sonra beklerken cancel
+                await self.cancelWaiter(id: waiterID)
             }
         }
 
         do {
-            try Task.checkCancellation() // permit aldıktan hemen sonra cancel oldu mu
+            try Task.checkCancellation()
         } catch {
             release()
             throw error
