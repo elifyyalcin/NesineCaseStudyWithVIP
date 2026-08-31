@@ -10,6 +10,16 @@ final class ScreenshotCollectionViewCell: UICollectionViewCell {
     private let activityIndicator = UIActivityIndicatorView(style: .medium)
     private var imageTask: Task<Void, Never>?
     private var representedURL: URL?
+    
+    private var item: Search.ScreenshotItem?
+    private var imageDownloader: ImageDownloaderProtocol?
+    
+    private lazy var retryButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitle("Retry", for: .normal)
+        button.addTarget(self, action: #selector(retry), for: .touchUpInside)
+        return button
+    }()
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -24,23 +34,31 @@ final class ScreenshotCollectionViewCell: UICollectionViewCell {
 
     func configure(
         with item: Search.ScreenshotItem,
-        imageDownloader: ImageDownloaderProtocol
+        imageDownloader: ImageDownloaderProtocol,
+        isFavorite: Bool = false
     ) {
-        imageTask?.cancel()
+        self.item = item
+        self.imageDownloader = imageDownloader
         representedURL = item.imageURL
         titleLabel.text = item.appName
+        loadImage(url: item.imageURL)
+        contentView.backgroundColor = isFavorite ? .red : .systemBackground
+    }
+    
+    func loadImage(url: URL) {
+        imageTask?.cancel()
         screenshotImageView.image = UIImage(systemName: "photo")
         screenshotImageView.tintColor = .tertiaryLabel
         activityIndicator.startAnimating()
-
-        let url = item.imageURL
+        
         imageTask = Task { [weak self] in
             do {
-                let image = try await imageDownloader.image(from: url)
+                let image = try await self?.imageDownloader?.image(from: url)
                 guard !Task.isCancelled, let self, self.representedURL == url else {
                     return
                 }
-
+                
+                self.retryButton.isHidden = true
                 self.screenshotImageView.image = image
                 self.screenshotImageView.tintColor = nil
                 self.activityIndicator.stopAnimating()
@@ -50,8 +68,17 @@ final class ScreenshotCollectionViewCell: UICollectionViewCell {
                 }
                 self.screenshotImageView.image = UIImage(systemName: "exclamationmark.triangle")
                 self.activityIndicator.stopAnimating()
+                self.retryButton.isHidden = false
             }
         }
+    }
+    
+    @objc func retry() {
+        guard let url = representedURL else {
+            return
+        }
+        
+        loadImage(url: url)
     }
 
     override func prepareForReuse() {
@@ -82,6 +109,7 @@ private extension ScreenshotCollectionViewCell {
         contentView.addSubview(screenshotImageView)
         contentView.addSubview(titleLabel)
         contentView.addSubview(activityIndicator)
+        contentView.addSubview(retryButton)
     }
 
     func setupConstraints() {
@@ -97,6 +125,10 @@ private extension ScreenshotCollectionViewCell {
         }
 
         activityIndicator.snp.makeConstraints {
+            $0.center.equalTo(screenshotImageView)
+        }
+        
+        retryButton.snp.makeConstraints {
             $0.center.equalTo(screenshotImageView)
         }
     }

@@ -19,6 +19,7 @@ final class NetworkService: NetworkServiceProtocol {
 
         var request = URLRequest(url: url)
         request.httpMethod = endpoint.method.rawValue
+        request.cachePolicy = .reloadIgnoringLocalCacheData
 
         do {
             let (data, response) = try await session.data(for: request)
@@ -40,6 +41,8 @@ final class NetworkService: NetworkServiceProtocol {
             throw error
         } catch is DecodingError {
             throw NetworkError.decoding
+        } catch let error as URLError where error.code == .cancelled {
+            throw NetworkError.cancelled
         } catch is URLError {
             throw NetworkError.transport
         } catch {

@@ -1,6 +1,25 @@
 import SnapKit
 import UIKit
 
+final class Favorite {
+    static let shared = Favorite()
+    
+    private var favoriteURLs: Set<URL> = []
+    private init() {}
+    
+    func isFavorite(url: URL) -> Bool {
+        favoriteURLs.contains(url)
+    }
+    
+    func toggle(url: URL) {
+        if favoriteURLs.contains(url) {
+            favoriteURLs.remove(url)
+        } else {
+            favoriteURLs.insert(url)
+        }
+    }
+}
+
 @MainActor
 final class SearchViewController: UIViewController {
     private let interactor: SearchBusinessLogic
@@ -11,6 +30,13 @@ final class SearchViewController: UIViewController {
     private let collectionView: UICollectionView
     private let stateLabel = UILabel()
     private let activityIndicator = UIActivityIndicatorView(style: .large)
+    
+    private lazy var retryButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitle("Retry", for: .normal)
+        button.addTarget(self, action: #selector(retry), for: .touchUpInside)
+        return button
+    }()
 
     private var items: [Search.ScreenshotItem] = []
     private var debounceTask: Task<Void, Never>?
@@ -41,6 +67,13 @@ final class SearchViewController: UIViewController {
         setupConstraints()
         interactor.reset()
     }
+    
+    @objc func retry() {
+        Task { [weak self] in
+            guard let self else { return }
+            await self.interactor.retry()
+        }
+    }
 
     deinit {
         debounceTask?.cancel()
@@ -54,22 +87,31 @@ extension SearchViewController: SearchDisplayLogic {
             showMessage(message)
             items = []
             collectionView.reloadData()
+            retryButton.isHidden = true
         case .loading:
             items = []
             collectionView.reloadData()
             stateLabel.isHidden = true
             collectionView.isHidden = true
+            retryButton.isHidden = true
             activityIndicator.startAnimating()
         case .content(let items):
             self.items = items
             collectionView.reloadData()
             stateLabel.isHidden = true
+            retryButton.isHidden = true
             activityIndicator.stopAnimating()
             collectionView.isHidden = false
-        case .empty(let message), .error(let message):
+        case .empty(let message):
             showMessage(message)
             items = []
             collectionView.reloadData()
+            retryButton.isHidden = true
+        case .error(let message):
+            showMessage(message)
+            items = []
+            collectionView.reloadData()
+            retryButton.isHidden = false
         }
     }
 }
@@ -112,7 +154,10 @@ extension SearchViewController: UISearchBarDelegate {
 extension SearchViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         guard items.indices.contains(indexPath.item) else { return }
-        router.routeToImagePreview(imageURL: items[indexPath.item].imageURL)
+        // router.routeToImagePreview(imageURL: items[indexPath.item].imageURL)
+        var item = items[indexPath.item]
+        Favorite.shared.toggle(url: item.imageURL)
+        collectionView.reloadItems(at: [indexPath])
     }
 }
 
@@ -137,7 +182,8 @@ extension SearchViewController: UICollectionViewDataSource {
 
         cell.configure(
             with: items[indexPath.item],
-            imageDownloader: imageDownloader
+            imageDownloader: imageDownloader,
+            isFavorite: Favorite.shared.isFavorite(url: items[indexPath.item].imageURL)
         )
         return cell
     }
@@ -180,6 +226,7 @@ private extension SearchViewController {
         view.addSubview(collectionView)
         view.addSubview(stateLabel)
         view.addSubview(activityIndicator)
+        view.addSubview(retryButton)
     }
 
     func setupConstraints() {
@@ -200,6 +247,11 @@ private extension SearchViewController {
 
         activityIndicator.snp.makeConstraints {
             $0.center.equalTo(collectionView)
+        }
+        
+        retryButton.snp.makeConstraints {
+            $0.centerX.equalTo(collectionView)
+            $0.top.equalTo(stateLabel.snp.bottom).offset(8)
         }
     }
 

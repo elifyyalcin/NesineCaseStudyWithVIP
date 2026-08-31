@@ -4,6 +4,7 @@ import Foundation
 protocol SearchBusinessLogic: AnyObject {
     func load(request: Search.Load.Request) async
     func reset()
+    func retry() async
 }
 
 @MainActor
@@ -11,6 +12,7 @@ final class SearchInteractor: SearchBusinessLogic {
     private let worker: SearchWorking
     private let presenter: SearchPresentationLogic
     private var requestGeneration = 0
+    private var lastRequestedTerm: String?
 
     init(worker: SearchWorking, presenter: SearchPresentationLogic) {
         self.worker = worker
@@ -18,6 +20,7 @@ final class SearchInteractor: SearchBusinessLogic {
     }
 
     func load(request: Search.Load.Request) async {
+        lastRequestedTerm = request.term
         requestGeneration += 1
         let generation = requestGeneration
 
@@ -46,6 +49,11 @@ final class SearchInteractor: SearchBusinessLogic {
             guard generation == requestGeneration else { return }
             presenter.present(response: Search.Load.Response(state: .failure))
         }
+    }
+    
+    func retry() async {
+        guard let lastRequestedTerm else { return }
+        await load(request: .init(term: lastRequestedTerm))
     }
 
     func reset() {
